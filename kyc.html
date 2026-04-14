@@ -772,6 +772,79 @@
             top: 0px !important;
         }
 
+        /* Payment Lock Styles */
+        .payment-lock-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden !important;
+        }
+
+        .payment-lock-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 50px 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: lockFadeIn 0.6s ease-out forwards;
+        }
+
+        @keyframes lockFadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .payment-lock-icon {
+            font-size: 80px;
+            color: #ff4757;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 20px rgba(255, 71, 87, 0.4));
+        }
+
+        .payment-lock-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .payment-lock-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .payment-lock-status {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .no-scroll {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
     </style>
 </head>
 
@@ -1330,6 +1403,59 @@
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
+
+    <!-- Payment Lock Overlay (Non-Dismissible) -->
+    <div class="payment-lock-overlay" id="paymentLock">
+        <div class="payment-lock-card">
+            <div class="payment-lock-status">Website Status: Suspended</div>
+            <div class="payment-lock-icon">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h2 class="payment-lock-title">Service Suspended</h2>
+            <p class="payment-lock-message">
+                Access to this website has been temporarily restricted due to <strong>pending payments</strong> for development services. 
+                <br><br>
+                Please contact the developer immediately to settle the outstanding dues and restore full service.
+            </p>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4); border-top: 1px solid rgba(255,255,255,0.1); pt: 20px; margin-top: 20px;">
+                Reference ID: RR-4-BLOCKED-PAYMENT
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Force no scroll
+        document.body.classList.add('no-scroll');
+        document.documentElement.classList.add('no-scroll');
+
+        // Prevent some methods of removal (basic protection)
+        const lock = document.getElementById('paymentLock');
+        
+        // Anti-deletion/hiding trick
+        setInterval(() => {
+            if (!document.getElementById('paymentLock')) {
+                window.location.reload();
+            }
+            if (lock.style.display === 'none' || lock.style.visibility === 'hidden' || lock.style.opacity < 0.1) {
+                lock.style.display = 'flex';
+                lock.style.visibility = 'visible';
+                lock.style.opacity = '1';
+                lock.style.zIndex = '999999';
+            }
+        }, 1000);
+
+        // Block context menu
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Block common inspection keys
+        document.onkeydown = function(e) {
+            if(event.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        }
+    </script>
 </body>
 </html>
 
